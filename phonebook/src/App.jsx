@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const Entry = ({person}) => {
-  console.log({person});
+  
   return <li>{person.name}</li>
 }
 
@@ -11,17 +11,23 @@ const App = () => {
   ]) 
   const [newName, setNewName] = useState('')
 
+  const nameCheck = (newName) => {
+    return persons.some(p => p.name.toLowerCase() === newName.toLowerCase())
+  }
+
   const addName = (event) => {
     event.preventDefault()
-    const nameObj = {
-      name: newName
+    if (nameCheck(newName) === true){
+      alert(`${newName} is already added to phonebook`)
     }
-    setPersons(persons.concat(nameObj))
+    else{
+      const nameObj = {name: newName}
+      setPersons(persons.concat(nameObj))
+    }
     setNewName('')
   }
 
   const handleNameAdd = (event) => {
-    console.log(event.target.value)
     setNewName(event.target.value)
   }
 
