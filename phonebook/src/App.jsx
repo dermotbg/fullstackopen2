@@ -40,6 +40,16 @@ const App = () => {
     setNewNum('')
   }
 
+  const delName = (id) => {
+    const dupEntry = persons.find(p => p.id === id)
+    if (confirm(`Delete ${dupEntry.name}?`)) {
+    listService
+    .deleteMe(dupEntry.id)
+    .then(response => {
+      setPersons(persons.filter(p => p.id !== dupEntry.id))
+    })}
+  }
+
   const handleNameAdd = (event) => setNewName(event.target.value)
   const handleNumAdd = (event) => setNewNum(event.target.value)
   const handleSearch = (event) => setSearch(event.target.value)
@@ -56,7 +66,7 @@ const App = () => {
       <h3>Add new:</h3>
       <CreateEntry addName={addName} newName={newName} newNum={newNum} handleNameAdd={handleNameAdd} handleNumAdd={handleNumAdd}/>
       <h3>Numbers</h3>
-      <Phonebook nameFilter={nameFilter} />
+      <Phonebook nameFilter={nameFilter} delName={delName}/>
     </div>
   )
 }
