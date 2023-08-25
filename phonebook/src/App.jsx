@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Phonebook from './components/phonebook'
 import Search from './components/search'
 import CreateEntry from './components/create'
+import Notification from './components/notification'
 import listService from './services/phonebook'
 
 const App = () => {
@@ -9,6 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNum, setNewNum] = useState('')
   const [search, setSearch] = useState('')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     listService
@@ -30,6 +32,10 @@ const App = () => {
         .update(updatedObj.id, updatedObj)
         .then(returnedObj => {
           setPersons(persons.map(p => p.id !== updatedObj.id ? p : returnedObj))
+          setMessage(`${returnedObj.name}'s number has been updated`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
       }
     }
@@ -39,6 +45,10 @@ const App = () => {
       .create(nameObj)
       .then(retObj => {
         setPersons(persons.concat(retObj))
+        setMessage(`${retObj.name} has been added to the phonebook`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
       .catch(error => {
         console.log('failure to POST')
@@ -54,7 +64,12 @@ const App = () => {
     listService
     .deleteMe(dupEntry.id)
     .then(response => {
+      console.log(response);
       setPersons(persons.filter(p => p.id !== dupEntry.id))
+      setMessage(`${dupEntry.name} has been removed from the phonebook`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     })}
   }
 
@@ -70,6 +85,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message}/>
       <Search search={search} handleSearch={handleSearch}/>
       <h3>Add new:</h3>
       <CreateEntry addName={addName} newName={newName} newNum={newNum} handleNameAdd={handleNameAdd} handleNumAdd={handleNumAdd}/>
