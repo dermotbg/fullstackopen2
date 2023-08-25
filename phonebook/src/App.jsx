@@ -11,6 +11,7 @@ const App = () => {
   const [newNum, setNewNum] = useState('')
   const [search, setSearch] = useState('')
   const [message, setMessage] = useState(null)
+  const [isError, setIsError] = useState(false)
 
   useEffect(() => {
     listService
@@ -37,6 +38,15 @@ const App = () => {
             setMessage(null)
           }, 5000)
         })
+        .catch(error => {
+          setIsError(true)
+          setMessage(`Information of ${pObj.name} has already been removed from the server`)
+          setPersons(persons.filter(p => p.id !== pObj.id))
+          setTimeout(() => {
+            setMessage(null)
+            setIsError(false)
+          }, 5000)
+        })
       }
     }
     else{
@@ -61,16 +71,25 @@ const App = () => {
   const delName = (id) => {
     const dupEntry = persons.find(p => p.id === id)
     if (confirm(`Delete ${dupEntry.name}?`)) {
-    listService
-    .deleteMe(dupEntry.id)
-    .then(response => {
-      console.log(response);
-      setPersons(persons.filter(p => p.id !== dupEntry.id))
-      setMessage(`${dupEntry.name} has been removed from the phonebook`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
-    })}
+      listService
+      .deleteMe(dupEntry.id)
+      .then(response => {
+        setPersons(persons.filter(p => p.id !== dupEntry.id))
+        setMessage(`${dupEntry.name} has been removed from the phonebook`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+      })
+      .catch(error => {
+        setIsError(true)
+        setMessage(`Information of ${dupEntry.name} has already been removed from the server`)
+        setPersons(persons.filter(p => p.id !== dupEntry.id))
+        setTimeout(() => {
+          setMessage(null)
+          setIsError(true)
+        }, 5000)
+      })
+    }
   }
 
   const handleNameAdd = (event) => setNewName(event.target.value)
@@ -85,7 +104,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message}/>
+      <Notification message={message} error={isError}/>
       <Search search={search} handleSearch={handleSearch}/>
       <h3>Add new:</h3>
       <CreateEntry addName={addName} newName={newName} newNum={newNum} handleNameAdd={handleNameAdd} handleNumAdd={handleNumAdd}/>
