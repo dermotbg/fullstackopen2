@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import Phonebook from './components/phonebook'
 import Search from './components/search'
 import CreateEntry from './components/create'
+import listService from './services/phonebook'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -11,10 +11,10 @@ const App = () => {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    axios
-    .get('http://localhost:3001/persons')
-    .then(response => {
-      setPersons(response.data)
+    listService
+    .getList()
+    .then(fullList => {
+      setPersons(fullList)
     })
   }, [])
 
@@ -27,7 +27,14 @@ const App = () => {
     }
     else{
       const nameObj = {name: newName, number: newNum}
-      setPersons(persons.concat(nameObj))
+      listService
+      .create(nameObj)
+      .then(retObj => {
+        setPersons(persons.concat(retObj))
+      })
+      .catch(error => {
+        console.log('failure to POST')
+      })
     }
     setNewName('')
     setNewNum('')
