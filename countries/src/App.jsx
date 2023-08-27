@@ -12,6 +12,7 @@ function App() {
 
   const [search, setSearch] = useState('')
   const [countries, setCountries] = useState(null)
+  const [sngCountry, setSngCountry] = useState(null)
 
   const handleSearch = (event) => setSearch(event.target.value)
 
@@ -29,11 +30,25 @@ function App() {
     })
   },[])
 
+  useEffect(() => {
+    setSngCountry(null)
+  }, [search])
+
+  const showCountry = ({name}) => {
+    console.log(name)
+    fetchService
+    .getSng(name)
+    .then(response => {
+      console.log('GETSNG', response.data)
+      setSngCountry(response.data)
+    })
+  }  
+
   if (search === ''){return <Search search={search} handleSearch={handleSearch}/>}
   return (
     <>
       <Search search={search} handleSearch={handleSearch}/>
-      <List countryFilter={countryFilter}/>
+      <List countryFilter={countryFilter} sngCountry={sngCountry} showCountry={showCountry}/>
     </>
   )
 }
