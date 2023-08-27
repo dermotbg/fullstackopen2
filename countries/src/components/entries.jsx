@@ -1,8 +1,9 @@
+import Weather from './weather'
+
 export const ListEntry = ({name, showCountry}) => <li>{name} <button onClick={() => showCountry({name})}>show</button></li> 
 export const LangEntry = ({name}) => <li>{name} </li> 
 
-export const MainEntry = ({info}) => {
-    console.log(Object.entries(info.languages))
+export const MainEntry = ({info, search}) => {
     return(
         <div>
             <h1>{info.name.common} {info.flag}</h1>
@@ -15,7 +16,7 @@ export const MainEntry = ({info}) => {
                 </ul>
             </div>
             <img src={info.flags.png} alt={info.flags.alt} />
-
+            <Weather info={info} search={search}/>
         </div>
     )
 }
