@@ -62,6 +62,14 @@ const App = () => {
       })
       .catch(error => {
         console.log('failure to POST')
+        console.log(error)
+        console.log('HERE IS ERROR LOG', error.response.data.error)
+        setIsError(true)
+        setMessage(error.response.data.error)
+        setTimeout(() => {
+          setMessage(null)
+          setIsError(false)
+        }, 5000)
       })
     }
     setNewName('')
