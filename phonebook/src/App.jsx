@@ -27,7 +27,7 @@ const App = () => {
     event.preventDefault()
     if (nameCheck(newName) === true){
       if (confirm(`${newName} is already added to phonebook, do you wish to update their number?`)){
-        const pObj = persons.find(p => p.name === newName) 
+        const pObj = persons.find(p => p.name.toLowerCase() === newName.toLowerCase()) 
         const updatedObj = {...pObj, number: newNum}
         listService
         .update(updatedObj.id, updatedObj)
@@ -39,13 +39,25 @@ const App = () => {
           }, 5000)
         })
         .catch(error => {
-          setIsError(true)
-          setMessage(`Information of ${pObj.name} has already been removed from the server`)
-          setPersons(persons.filter(p => p.id !== pObj.id))
-          setTimeout(() => {
-            setMessage(null)
-            setIsError(false)
-          }, 5000)
+          console.log('ERROR:', error)
+          if(error instanceof TypeError){
+            setIsError(true)
+            setMessage(`Information of ${pObj.name} has already been removed from the server`)
+            setPersons(persons.filter(p => p.id !== pObj.id))
+            setTimeout(() => {
+              setMessage(null)
+              setIsError(false)
+            }, 5000)
+          }
+          else{
+            setIsError(true)
+            setMessage(error.response.data.error)
+            setTimeout(() => {
+              setMessage(null)
+              setIsError(false)
+            }, 5000)
+
+          }
         })
       }
     }
@@ -62,8 +74,7 @@ const App = () => {
       })
       .catch(error => {
         console.log('failure to POST')
-        console.log(error)
-        console.log('HERE IS ERROR LOG', error.response.data.error)
+        console.log(error.response.data.error)
         setIsError(true)
         setMessage(error.response.data.error)
         setTimeout(() => {
@@ -89,13 +100,7 @@ const App = () => {
         }, 5000)
       })
       .catch(error => {
-        setIsError(true)
-        setMessage(`Information of ${dupEntry.name} has already been removed from the server`)
-        setPersons(persons.filter(p => p.id !== dupEntry.id))
-        setTimeout(() => {
-          setMessage(null)
-          setIsError(true)
-        }, 5000)
+        console.log(error)
       })
     }
   }
